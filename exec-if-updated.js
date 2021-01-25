@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// spell-checker:ignore (options) nargs (packages/utils) execa globby
 
 const yargs = require('yargs');
 const globby = require('globby');
