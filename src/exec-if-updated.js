@@ -2,7 +2,7 @@
 // spell-checker:ignore (options) nargs (packages/utils) execa globby
 
 const yargs = require('yargs');
-const globby = require('globby');
+const glob = require('fast-glob');
 const execa = require('execa');
 const fs = require('fs');
 
@@ -33,7 +33,7 @@ async function main(options) {
 	const targetFiles = await matchFiles(options.target);
 
 	const anyMissingTargets = options.target
-		.filter((v) => !globby.hasMagic(v))
+		.filter((v) => !glob.generateTasks(v, { case: true })[0].dynamic)
 		.find((v) => !fs.existsSync(v))
 		? true
 		: false;
@@ -57,10 +57,12 @@ async function main(options) {
 }
 
 function matchFiles(fileGlob) {
+	const isWinOS = /^win/i.test(process.platform);
 	const GLOB_OPTIONS = {
+		case: isWinOS ? false : true,
 		stats: true,
 	};
-	return globby(fileGlob, GLOB_OPTIONS);
+	return glob(fileGlob, GLOB_OPTIONS);
 }
 
 function isSourceUpdated(sourceFiles, targetFiles) {
