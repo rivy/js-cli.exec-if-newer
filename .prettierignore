@@ -1,0 +1,21 @@
+# Prettier "ignore" list
+
+# * otherwise managed files
+.vscode/settings.json
+.vscode/extensions.json
+package.json
+
+# * build/coverage/dev artifacts
+.history
+.nyc_output
+build
+coverage
+CHANGELOG
+CHANGELOG.*
+dist
+
+# * format-sensitive files
+.changelog/*.tpl.*
+
+# * third-party code
+node_modules
