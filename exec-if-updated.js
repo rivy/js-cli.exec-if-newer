@@ -32,7 +32,13 @@ async function main(options) {
 	const sourceFiles = await matchFiles(options.source);
 	const targetFiles = await matchFiles(options.target);
 
-	if (isSourceUpdated(sourceFiles, targetFiles)) {
+	const anyMissingTargets = options.target
+		.filter((v) => !globby.hasMagic(v))
+		.find((v) => !fs.existsSync(v))
+		? true
+		: false;
+
+	if (anyMissingTargets || isSourceNewer(sourceFiles, targetFiles)) {
 		try {
 			const command = parseCommand(options);
 			const childProcess = execa.shell(command);
