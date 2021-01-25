@@ -6,7 +6,7 @@ Node command line utility for executing a command only if a set of source files 
 
 The exec-if-updated application was primarily designed to be used in NPM
 scripts to prevent recompiling or regenerating files if their source has
-not changed. The determination is made by comparing the latest timestamps 
+not changed. The determination is made by comparing the latest timestamps
 of a set of source and target files. If any source files are newer than the
 target files, the command is executed.
 
@@ -19,7 +19,7 @@ The exec-if-updated program is designed to work with [Node.js](http://nodejs.org
 ### Locally
 
 If you will be installing exec-if-updated for use in NPM scripts for
-your own package, the following commands can be used to install 
+your own package, the following commands can be used to install
 the program locally:
 
 #### NPM
@@ -36,7 +36,7 @@ yarn add --dev exec-if-updated
 
 ### Globally
 
-To install exec-if-updated for use across your entire system, use 
+To install exec-if-updated for use across your entire system, use
 the following commands (depending on your environment and package manager):
 
 #### NPM (Windows)
@@ -123,7 +123,7 @@ echo "Even works with pipes" | exec-if-updated --source src/** --target dist/** 
 
 ## Versioning
 
-exec-if-updated uses [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/mwootendev/exec-if-updated/tags). 
+exec-if-updated uses [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/mwootendev/exec-if-updated/tags).
 
 ## Authors
 
