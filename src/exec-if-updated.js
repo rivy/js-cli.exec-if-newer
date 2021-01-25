@@ -38,7 +38,7 @@ async function main(options) {
 		? true
 		: false;
 
-	if (anyMissingTargets || isSourceNewer(sourceFiles, targetFiles)) {
+	if (anyMissingTargets || isSourceUpdated(sourceFiles, targetFiles)) {
 		try {
 			const command = parseCommand(options);
 			const childProcess = execa.shell(command);
