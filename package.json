@@ -4,6 +4,9 @@
   "description": "Command line utility to execute a command only if a set of source files have been updated since a set of target files.\"",
   "main": "./dist/exec-if-updated.js",
   "bin": "./dist/exec-if-updated.js",
+  "engines": {
+    "node": ">= 6.0"
+  },
   "files": [
     "dist"
   ],
