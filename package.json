@@ -15,21 +15,18 @@
 		"node": ">= 6.0"
 	},
   "files": [
-    "dist"
+    "dist/cli"
   ],
-  "bin": "./dist/exec-if-updated.js",
-  "main": "./dist/exec-if-updated.js",
+  "bin": "./dist/cli/exec-if-updated.js",
+  "main": "./dist/cli/exec-if-updated.js",
   "scripts": {
-    "clean": "rimraf dist",
-    "precompile": "mkdirp dist",
-    "compile": "babel ./src/exec-if-updated.js | uglifyjs -c -m --toplevel -o dist/exec-if-updated.js",
+    "clean": "shx rm -rf ./dist",
+    "precompile": "shx mkdir -p ./dist/cli ./dist/pkg",
+    "compile": "babel ./src/exec-if-updated.js | uglifyjs -c -m --toplevel -o dist/cli/exec-if-updated.js",
+    "postcompile": "npm --quiet pack && shx mv exec-if-updated-*.tgz ./dist/pkg",
     "prerelease": "npm run clean && npm run compile",
-    "release": "npm publish dist/",
-    "release:patch": "npm version patch && npm run release",
-    "release:minor": "npm version minor && npm run release",
-    "release:major": "npm version major && npm run release",
     "prepublishOnly": "npm run --silent compile",
-    "version": "npm run compile && git add dist"
+    "version": "npm --silent run clean && npm run compile && git add dist"
   },
   "keywords": [
     "cli",
@@ -48,9 +45,7 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "copyfiles": "^2.0.0",
-    "mkdirp": "^0.5.1",
-    "rimraf": "^2.6.2",
+    "shx": "^0.3.3",
     "uglify-es": "^3.3.9"
   }
 }
