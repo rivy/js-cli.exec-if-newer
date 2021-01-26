@@ -117,9 +117,9 @@ echo "Even works with pipes" | exec-if-updated --source src/** --target dist/** 
 
 ## Built With
 
-* [Yargs](https://github.com/yargs/yargs) - For command line parsing.
-* [execa](https://github.com/sindresorhus/execa) - For executing the command line application.
-* [globby](https://github.com/sindresorhus/globby) - For matching the file globs for comparison.
+- [Yargs](https://github.com/yargs/yargs) - For command line parsing.
+- [execa](https://github.com/sindresorhus/execa) - For executing the command line application.
+- [globby](https://github.com/sindresorhus/globby) - For matching the file globs for comparison.
 
 ## Versioning
 
@@ -127,7 +127,7 @@ exec-if-updated uses [SemVer](http://semver.org/) for versioning. For the versio
 
 ## Authors
 
-* **Michael Wooten** - [mwootendev](https://github.com/mwootendev)
+- **Michael Wooten** - [mwootendev](https://github.com/mwootendev)
 
 ## License
 
