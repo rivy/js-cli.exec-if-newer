@@ -38,7 +38,7 @@ async function main(options) {
 		? true
 		: false;
 
-	if (anyMissingTargets || isSourceUpdated(sourceFiles, targetFiles)) {
+	if (anyMissingTargets || isSourceNewer(sourceFiles, targetFiles)) {
 		try {
 			const command = parseCommand(options);
 			const childProcess = execa.shell(command);
@@ -65,7 +65,7 @@ function matchFiles(fileGlob) {
 	return glob(fileGlob, GLOB_OPTIONS);
 }
 
-function isSourceUpdated(sourceFiles, targetFiles) {
+function isSourceNewer(sourceFiles, targetFiles) {
 	const toModifiedDate = (file) => new Date(file.mtimeMs);
 	const toLatestModified = (latestModifiedTime, fileModifiedTime) =>
 		fileModifiedTime.getTime() > latestModifiedTime.getTime()
