@@ -1,5 +1,5 @@
 {
-  "name": "exec-if-updated",
+  "name": "exec-if-newer",
   "version": "2.2.0",
   "description": "Command line utility to execute a command only if a set of source files have been updated since a set of target files.\"",
   "license": "MIT",
@@ -17,13 +17,13 @@
   "files": [
     "dist/cli"
   ],
-  "bin": "./dist/cli/exec-if-updated.js",
-  "main": "./dist/cli/exec-if-updated.js",
+  "bin": "./dist/cli/exec-if-newer.js",
+  "main": "./dist/cli/exec-if-newer.js",
   "scripts": {
     "clean": "shx rm -rf ./dist",
     "precompile": "shx mkdir -p ./dist/cli ./dist/pkg",
-    "compile": "babel ./src/exec-if-updated.js | uglifyjs -c -m --toplevel -o dist/cli/exec-if-updated.js",
-    "postcompile": "npm --quiet pack && shx mv exec-if-updated-*.tgz ./dist/pkg/exec-if-updated.tgz",
+    "compile": "babel ./src/exec-if-newer.js | uglifyjs -c -m --toplevel -o dist/cli/exec-if-newer.js",
+    "postcompile": "npm --quiet pack && shx mv exec-if-newer-*.tgz ./dist/pkg/exec-if-newer.tgz",
     "prerelease": "npm run clean && npm run compile",
     "prepublishOnly": "npm run --silent compile",
     "version": "npm --silent run clean && npm run compile && git add dist"
