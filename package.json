@@ -1,6 +1,6 @@
 {
   "name": "exec-if-updated",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "Command line utility to execute a command only if a set of source files have been updated since a set of target files.\"",
   "license": "MIT",
   "author": "Michael Wooten",
@@ -11,9 +11,9 @@
   "bugs": {
     "url": "https://github.com/mwootendev/exec-if-updated/issues"
   },
-	"engines": {
-		"node": ">= 6.0"
-	},
+  "engines": {
+    "node": ">= 6.0"
+  },
   "files": [
     "dist/cli"
   ],
