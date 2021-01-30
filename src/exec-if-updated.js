@@ -30,7 +30,7 @@ main(options);
 
 async function main(options) {
 	const sourceFiles = await matchFiles(options.source);
-	const targetFiles = await matchFiles(options.target);
+	const targetFileSets = await matchFiles(options.target);
 
 	const anyMissingTargets = options.target
 		.filter((v) => !glob.generateTasks(v, { case: true })[0].dynamic)
@@ -38,7 +38,7 @@ async function main(options) {
 		? true
 		: false;
 
-	if (anyMissingTargets || isSourceNewer(sourceFiles, targetFiles)) {
+	if (anyMissingTargets || isSourceNewer(sourceFiles, targetFileSets)) {
 		try {
 			const command = parseCommand(options);
 			const childProcess = execa.shell(command);
@@ -67,16 +67,23 @@ function matchFiles(fileGlob) {
 
 function isSourceNewer(sourceFiles, targetFiles) {
 	const toModifiedDate = (file) => new Date(file.mtimeMs);
+	const toEarliestModified = (earliestModifiedTime, fileModifiedTime) =>
+		fileModifiedTime.getTime() < earliestModifiedTime.getTime()
+			? fileModifiedTime
+			: earliestModifiedTime;
 	const toLatestModified = (latestModifiedTime, fileModifiedTime) =>
 		fileModifiedTime.getTime() > latestModifiedTime.getTime()
 			? fileModifiedTime
 			: latestModifiedTime;
 
-	const defaultDate = new Date(0);
-	const latestSourceDate = sourceFiles.map(toModifiedDate).reduce(toLatestModified, defaultDate);
-	const latestTargetDate = targetFiles.map(toModifiedDate).reduce(toLatestModified, defaultDate);
+	const dateNow = new Date(Date.now());
 
-	return latestSourceDate.getTime() > latestTargetDate.getTime();
+	const earliestTargetDate = targetFiles.map(toModifiedDate).reduce(toEarliestModified, dateNow);
+	const latestSourceDate = sourceFiles
+		.map(toModifiedDate)
+		.reduce(toLatestModified, earliestTargetDate);
+
+	return latestSourceDate.getTime() > earliestTargetDate.getTime();
 }
 
 function parseCommand(options) {
