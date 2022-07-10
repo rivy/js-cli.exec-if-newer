@@ -39,7 +39,7 @@
   ],
   "dependencies": {
     "execa": "^0.10.0",
-    "fast-glob": "^2.2.7",
+    "fast-glob": "^3.2.11",
     "yargs": "^11.0.0"
   },
   "devDependencies": {
