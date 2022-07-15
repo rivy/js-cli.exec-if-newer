@@ -23,7 +23,7 @@
     "clean": "shx rm -rf ./dist",
     "precompile": "shx mkdir -p ./dist/cli ./dist/pkg",
     "compile": "babel ./src/exec-if-updated.js | uglifyjs -c -m --toplevel -o dist/cli/exec-if-updated.js",
-    "postcompile": "npm --quiet pack && shx mv exec-if-updated-*.tgz ./dist/pkg",
+    "postcompile": "npm --quiet pack && shx mv exec-if-updated-*.tgz ./dist/pkg/exec-if-updated.tgz",
     "prerelease": "npm run clean && npm run compile",
     "prepublishOnly": "npm run --silent compile",
     "version": "npm --silent run clean && npm run compile && git add dist"
