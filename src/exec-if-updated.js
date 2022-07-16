@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // spell-checker:ignore (options) nargs (packages/utils) execa globby
+'use strict';
 
 const yargs = require('yargs');
 const glob = require('fast-glob');
@@ -29,16 +30,26 @@ const options = yargs
 main(options);
 
 async function main(options) {
-	const sourceFiles = await matchFiles(options.source);
-	const targetFileSets = await matchFiles(options.target);
+	// note: 'fast-glob' expects POSIX-like file path patterns
+	const source = options.source.map(pathToPOSIX);
+	const target = options.target.map(pathToPOSIX);
 
-	const anyMissingTargets = options.target
-		.filter((v) => !glob.generateTasks(v, { case: true })[0].dynamic)
-		.find((v) => !fs.existsSync(v))
+	const sourceFileStats = await matchFiles(source);
+	const targetFileStats = await matchFiles(target);
+
+	// console.warn({ options, sourceFileStats, targetFileStats });
+
+	const anyMissingNonGlobTargets = target
+		.filter((filePattern) => {
+			if (!glob.isDynamicPattern(filePattern)) return filePattern;
+		})
+		.find((nonGlobFilePattern) => !fs.existsSync(nonGlobFilePattern))
 		? true
 		: false;
 
-	if (anyMissingTargets || isSourceNewer(sourceFiles, targetFileSets)) {
+	// console.warn({ anyMissingNonGlobTargets });
+
+	if (anyMissingNonGlobTargets || isAnySourceNewer(sourceFileStats, targetFileStats)) {
 		try {
 			const command = parseCommand(options);
 			const childProcess = execa.shell(command);
@@ -51,38 +62,43 @@ async function main(options) {
 			console.error(e.message);
 			process.exit(1);
 		}
-	} else {
-		process.exit();
 	}
+
+	process.exit(0);
 }
 
 function matchFiles(fileGlob) {
 	const isWinOS = /^win/i.test(process.platform);
-	const GLOB_OPTIONS = {
-		case: isWinOS ? false : true,
-		stats: true,
-	};
+	const GLOB_OPTIONS = { caseSensitiveMatch: isWinOS ? false : true, stats: true };
 	return glob(fileGlob, GLOB_OPTIONS);
 }
 
-function isSourceNewer(sourceFiles, targetFiles) {
-	const toModifiedDate = (file) => new Date(file.mtimeMs);
-	const toEarliestModified = (earliestModifiedTime, fileModifiedTime) =>
-		fileModifiedTime.getTime() < earliestModifiedTime.getTime()
-			? fileModifiedTime
-			: earliestModifiedTime;
-	const toLatestModified = (latestModifiedTime, fileModifiedTime) =>
-		fileModifiedTime.getTime() > latestModifiedTime.getTime()
-			? fileModifiedTime
-			: latestModifiedTime;
+function isAnySourceNewer(sourceFileStats, targetFileStats) {
+	const toModifiedDate = (file) => new Date(file.stats.mtimeMs);
 
-	const dateNow = new Date(Date.now());
+	const toEarliestDate = (earliestDate, date) => {
+		earliestDate ??= date;
+		return date.getTime() < earliestDate.getTime() ? date : earliestDate;
+	};
+	const toLatestDate = (latestDate, date) => {
+		latestDate ??= date;
+		return date.getTime() > latestDate.getTime() ? date : latestDate;
+	};
 
-	const earliestTargetDate = targetFiles.map(toModifiedDate).reduce(toEarliestModified, dateNow);
-	const latestSourceDate = sourceFiles
+	const earliestTargetDate = targetFileStats.map(toModifiedDate).reduce(toEarliestDate, undefined);
+	const latestSourceDate = sourceFileStats
 		.map(toModifiedDate)
-		.reduce(toLatestModified, earliestTargetDate);
+		.reduce(toLatestDate, earliestTargetDate);
 
+	// console.warn({
+	// 	sourceDates: sourceFileStats.map(toModifiedDate),
+	// 	latestSourceDate,
+	// 	targetDates: targetFileStats.map(toModifiedDate),
+	// 	earliestTargetDate,
+	// });
+
+	if (latestSourceDate == null) return false;
+	if (earliestTargetDate == null) return true;
 	return latestSourceDate.getTime() > earliestTargetDate.getTime();
 }
 
@@ -92,4 +108,9 @@ function parseCommand(options) {
 	} else {
 		throw new Error('Missing command');
 	}
+}
+
+function pathToPOSIX(p) {
+	// ToDO: convert to use of $path.SEP_PATTERN
+	return p.replace(/\\/g, '/');
 }
