@@ -8,7 +8,7 @@ const execa = require('execa');
 const fs = require('fs');
 
 const options = yargs
-	.example('$0 --source src/** --source assets/** --target dist/** npm run build')
+	.example('$0 --source src/** --source assets/** --target dist/** TARGET_EXE ARGS')
 	.option('s', {
 		alias: 'source',
 		demandOption: true,
@@ -25,6 +25,7 @@ const options = yargs
 		type: 'array',
 		nargs: 1,
 	})
+	.option('debug', { describe: 'enable debug logging', type: 'boolean' })
 	.wrap(yargs.terminalWidth()).argv;
 
 main(options);
@@ -37,7 +38,7 @@ async function main(options) {
 	const sourceFileStats = await matchFiles(source);
 	const targetFileStats = await matchFiles(target);
 
-	// console.warn({ options, sourceFileStats, targetFileStats });
+	if (options.debug) console.warn({ options, sourceFileStats, targetFileStats });
 
 	const anyMissingNonGlobTargets = target
 		.filter((filePattern) => {
@@ -47,7 +48,7 @@ async function main(options) {
 		? true
 		: false;
 
-	// console.warn({ anyMissingNonGlobTargets });
+	if (options.debug) console.log({ anyMissingNonGlobTargets });
 
 	if (anyMissingNonGlobTargets || isAnySourceNewer(sourceFileStats, targetFileStats)) {
 		try {
@@ -90,12 +91,14 @@ function isAnySourceNewer(sourceFileStats, targetFileStats) {
 		.map(toModifiedDate)
 		.reduce(toLatestDate, earliestTargetDate);
 
-	// console.warn({
-	// 	sourceDates: sourceFileStats.map(toModifiedDate),
-	// 	latestSourceDate,
-	// 	targetDates: targetFileStats.map(toModifiedDate),
-	// 	earliestTargetDate,
-	// });
+	if (options.debug) {
+		console.log({
+			sourceDates: sourceFileStats.map(toModifiedDate),
+			latestSourceDate,
+			targetDates: targetFileStats.map(toModifiedDate),
+			earliestTargetDate,
+		});
+	}
 
 	if (latestSourceDate == null) return false;
 	if (earliestTargetDate == null) return true;
