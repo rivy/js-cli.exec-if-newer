@@ -1,6 +1,6 @@
 {
   "name": "exec-if-updated",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Command line utility to execute a command only if a set of source files have been updated since a set of target files.\"",
   "license": "MIT",
   "author": "Michael Wooten",
